@@ -1,0 +1,18 @@
+title Single Page App New Note
+
+note over browser:
+User completes form and clicks submit.
+end note
+note over browser:
+Event handler in the browser's javascript adds 
+the data for new note to the note list,
+and rerenders the note list on the page.
+end note
+note over browser:
+Data for new note sent via POST request to server.
+end note over 
+browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+server-->browser: HTTP 201
+note over server:
+Server receives info for new note item and appends new note to server data.
+end note
