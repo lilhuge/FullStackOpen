@@ -1,11 +1,19 @@
 import { useState } from "react";
 
-const Statistics = ({good, neutral, bad}) => {
+const Statistics = ({ good, neutral, bad }) => {
   const calculateAverage = () => (good - bad) / (good + neutral + bad);
   const calculatePositive = () => (100 * good) / (good + neutral + bad);
 
+  if (good + neutral + bad < 1) {
+    return (
+      <>
+        <p>No feedback given</p>
+      </>
+    );
+  }
+
   return (
-    <>    
+    <>
       <p>good {good}</p>
       <p>neutral {neutral}</p>
       <p>bad {bad}</p>
