@@ -22,6 +22,9 @@ const App = () => {
     }
   };
 
+  const calculateAverage = () => (good - bad) / (good + neutral + bad);
+  const calculatePositive = () => (100 * good) / (good + neutral + bad);
+
   return (
     <div>
       <h1>give feedback</h1>
@@ -32,6 +35,8 @@ const App = () => {
       <p>good {good}</p>
       <p>neutral {neutral}</p>
       <p>bad {bad}</p>
+      <p>average {calculateAverage() || 0}</p>
+      <p>positive {calculatePositive() || 0} %</p>
     </div>
   );
 };
