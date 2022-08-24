@@ -1,5 +1,54 @@
 import { useState } from "react";
 
+const Filter = ({ filterText, handleFilterChange }) => {
+  return (
+    <div>
+      filter shown with{" "}
+      <input value={filterText} onChange={handleFilterChange} />
+    </div>
+  );
+};
+
+const NewContactForm = ({
+  addPerson,
+  newName,
+  newNumber,
+  handleNameChange,
+  handleNumberChange,
+}) => {
+  return (
+    <form onSubmit={addPerson}>
+      <div>
+        name: <input value={newName} onChange={handleNameChange} />
+      </div>
+      <div>
+        number: <input value={newNumber} onChange={handleNumberChange} />
+      </div>
+      <div>
+        <button type="submit">add</button>
+      </div>
+    </form>
+  );
+};
+
+const DisplayFilteredContacts = ({ shownPersons }) => {
+  return (
+    <>
+      {shownPersons.map((person) => (
+        <DisplayContact key={person.name} person={person} />
+      ))}
+    </>
+  );
+};
+
+const DisplayContact = ({ person }) => {
+  return (
+    <p key={person.name}>
+      {person.name} : {person.number}
+    </p>
+  );
+};
+
 const App = () => {
   const [persons, setPersons] = useState([
     { name: "Arto Hellas", number: "040-123456", id: 1 },
@@ -37,28 +86,17 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-        filter shown with{" "}
-        <input value={filterText} onChange={handleFilterChange} />
-      </div>
+      <Filter filterText={filterText} handleFilterChange={handleFilterChange} />
       <h2>Add new contact</h2>
-      <form onSubmit={addPerson}>
-        <div>
-          name: <input value={newName} onChange={handleNameChange} />
-        </div>
-        <div>
-          number: <input value={newNumber} onChange={handleNumberChange} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <NewContactForm
+        addPerson={addPerson}
+        newName={newName}
+        newNumber={newNumber}
+        handleNameChange={handleNameChange}
+        handleNumberChange={handleNumberChange}
+      />
       <h2>Numbers</h2>
-      {shownPersons.map((person) => (
-        <p key={person.name}>
-          {person.name} : {person.number}
-        </p>
-      ))}
+      <DisplayFilteredContacts shownPersons={shownPersons} />
     </div>
   );
 };
