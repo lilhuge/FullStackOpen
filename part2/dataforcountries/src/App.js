@@ -1,8 +1,37 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
+const FullCountryView = ({ country }) => {
+  let languageArray = [];
+  for (const language in country.languages) {
+    languageArray.push(country.languages[language]);
+  }
+  return (
+    <>
+      <h2>{country.name.common}</h2>
+      <p>Capital: {country.capital}</p>
+      <p>Area: {country.area}</p>
+      <h3>Languages:</h3>
+      <ul>
+        {languageArray.map((language) => (
+          <li key={language}>{language}</li>
+        ))}
+      </ul>
+      <img src={country.flags.png} alt={"flag"} style={{ width: "150px" }} />
+    </>
+  );
+};
 
-const DisplayResults = ({ filteredResults }) => {
+const SearchResultItem = ({ result, handleShowClick }) => {
+  return (
+    <div key={result.name.common}>
+      {result.name.common}
+      <button onClick={handleShowClick(result.name.common)}>show</button>
+    </div>
+  );
+};
+
+const DisplayResults = ({ filteredResults, handleShowClick }) => {
   const resultCount = filteredResults.length;
   switch (true) {
     case resultCount === 0:
@@ -11,30 +40,16 @@ const DisplayResults = ({ filteredResults }) => {
       return <p>Too many results, specify another filter</p>;
     case resultCount === 1:
       const result = filteredResults[0];
-      console.log(result.languages);
-      let languageArray = [];
-      for (const language in result.languages) {
-        languageArray.push(result.languages[language]);
-      }
-      return (
-        <>
-          <h2>{result.name.common}</h2>
-          <p>Capital: {result.capital}</p>
-          <p>Area: {result.area}</p>
-          <h3>Languages:</h3>
-          <ul>
-            {languageArray.map((language) => (
-              <li key={language}>{language}</li>
-            ))}
-          </ul>
-          <img src={result.flags.png} alt={"flag"} style={{ width: "150px" }} />
-        </>
-      );
+      return <FullCountryView country={result} />;
     default:
       return (
         <>
           {filteredResults.map((result) => (
-            <p key={result.name.common}>{result.name.common}</p>
+            <SearchResultItem
+              key={result.name.common}
+              result={result}
+              handleShowClick={handleShowClick}
+            />
           ))}
         </>
       );
@@ -52,6 +67,9 @@ const App = () => {
   }, []);
 
   const handleSearchChange = (event) => setSearchQuery(event.target.value);
+  const handleShowClick = (country) => () => {
+    setSearchQuery(country);
+  };
 
   const filterResults = (results) => {
     return results.filter((result) =>
@@ -66,7 +84,10 @@ const App = () => {
         <input value={searchQuery} onChange={handleSearchChange} />
       </div>
       <div>
-        <DisplayResults filteredResults={filterResults(countries)} />
+        <DisplayResults
+          filteredResults={filterResults(countries)}
+          handleShowClick={handleShowClick}
+        />
       </div>
     </div>
   );
