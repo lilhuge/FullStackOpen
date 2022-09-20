@@ -2,22 +2,65 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 
 const FullCountryView = ({ country }) => {
+  const { capital, languages, name, flags, area } = country;
+  const [weather, setWeather] = useState({});
+  // const lat = country.latlng[0];
+  // const lng = country.latlng[1];
+  const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
+  useEffect(() => {
+    axios
+      .get(
+        `https://api.openweathermap.org/data/2.5/weather?q=${capital}&appid=${apiKey}`
+      )
+      .then((response) => {
+        setWeather(response.data);
+      });
+  }, [capital, apiKey]);
+
+  // console.log(lat);
+  // console.log(lng);
+  // console.log(apiKey);
+
+  const weatherIcon = weather?.weather?.[0]?.icon || null;
+  const description = weather?.weather?.[0]?.description || null;
+  const temperature = (weather?.main?.temp - 273.15).toFixed(2) || null;
+  const windSpeed = weather?.wind?.speed || null;
+
+  
+  // console.log(weatherIcon);
+
   let languageArray = [];
-  for (const language in country.languages) {
-    languageArray.push(country.languages[language]);
+  for (const language in languages) {
+    languageArray.push(languages[language]);
   }
   return (
     <>
-      <h2>{country.name.common}</h2>
-      <p>Capital: {country.capital}</p>
-      <p>Area: {country.area}</p>
+      <h2>{name.common}</h2>
+      <p>Capital: {capital}</p>
+      <p>Area: {area}</p>
       <h3>Languages:</h3>
       <ul>
         {languageArray.map((language) => (
           <li key={language}>{language}</li>
         ))}
       </ul>
-      <img src={country.flags.png} alt={"flag"} style={{ width: "150px" }} />
+      <div>
+        <img src={flags.png} alt={"flag"} style={{ width: "150px" }} />
+      </div>
+
+      {weatherIcon !== null && (
+        <div>
+          <h3>Weather in {capital}</h3>
+          <p><strong>Temperature: </strong>{temperature} °C</p>
+          <p><strong>Description: </strong>{description}</p>
+          <img
+            src={`http://openweathermap.org/img/wn/${weatherIcon}@2x.png`}
+            alt={"flag"}
+            style={{ width: "150px" }}
+          />
+          <p><strong>Wind: </strong>{windSpeed} m/s</p>
+        </div>
+      )}
     </>
   );
 };
