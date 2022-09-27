@@ -61,9 +61,7 @@ const App = () => {
   const [persons, setPersons] = useState([]);
 
   useEffect(() => {
-    phonebookService.getAll().then((initialPersons) => {
-      setPersons(initialPersons);
-    });
+    fetchData();
   }, []);
 
   const [newName, setNewName] = useState("");
@@ -74,15 +72,39 @@ const App = () => {
   const handleNameChange = (event) => setNewName(event.target.value);
   const handleNumberChange = (event) => setNewNumber(event.target.value);
 
+  const fetchData = () => {
+    phonebookService.getAll().then((initialPersons) => {
+      setPersons(initialPersons);
+    });
+  };
+
   const addPerson = (event) => {
     event.preventDefault();
-    const personObject = { name: newName, number: newNumber };
-    const names = persons.map((person) => person.name);
-    const nameAlreadyInBook = names.includes(newName);
+    const newPersonObject = { name: newName, number: newNumber };
+    const matchingPersons = persons.filter((person) => person.name === newName);
+    const nameAlreadyInBook = matchingPersons.length > 0;
+    console.log(matchingPersons);
     if (nameAlreadyInBook) {
-      alert(`${newName} is already added to phonebook`);
+      if (
+        window.confirm(
+          `${newName} is already added to phonebook, replace the old number with a new one?`
+        )
+      ) {
+        console.log(matchingPersons[0]);
+        phonebookService
+          .update(matchingPersons[0].id, newPersonObject)
+          .then((updatedPerson) => {
+            setPersons(
+              persons.map((person) =>
+                person.id === matchingPersons[0].id ? updatedPerson : person
+              )
+            );
+            setNewName("");
+            setNewNumber("");
+          });
+      }
     } else {
-      phonebookService.create(personObject).then((newPerson) => {
+      phonebookService.create(newPersonObject).then((newPerson) => {
         setPersons(persons.concat(newPerson));
         setNewName("");
         setNewNumber("");

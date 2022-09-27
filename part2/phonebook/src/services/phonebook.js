@@ -16,10 +16,16 @@ const deletePerson = (id) => {
   return request.then((response) => response.data);
 };
 
+const update = (id, newDetails) => {
+  const request = axios.put(`${baseUrl}/${id}`, newDetails);
+  return request.then((response) => response.data);
+};
+
 const exportedObject = {
   create,
   getAll,
   deletePerson,
+  update,
 };
 
 export default exportedObject;
