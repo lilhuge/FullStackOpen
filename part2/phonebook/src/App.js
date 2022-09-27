@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import phonebookService from "./services/phonebook.js";
 
 const Filter = ({ filterText, handleFilterChange }) => {
   return (
@@ -54,7 +54,7 @@ const App = () => {
   const [persons, setPersons] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((response) => {
+    phonebookService.getAll().then((response) => {
       setPersons(response.data);
     });
   }, []);
@@ -75,13 +75,11 @@ const App = () => {
     if (nameAlreadyInBook) {
       alert(`${newName} is already added to phonebook`);
     } else {
-      axios
-        .post("http://localhost:3001/persons", personObject)
-        .then((response) => {
-          setPersons(persons.concat(response.data));
-          setNewName("");
-          setNewNumber("");
-        });
+      phonebookService.create(personObject).then((response) => {
+        setPersons(persons.concat(response.data));
+        setNewName("");
+        setNewNumber("");
+      });
     }
   };
 
