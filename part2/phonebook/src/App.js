@@ -32,20 +32,27 @@ const NewContactForm = ({
   );
 };
 
-const DisplayFilteredContacts = ({ shownPersons }) => {
+const DisplayFilteredContacts = ({ shownPersons, handleDeletePerson }) => {
   return (
     <>
       {shownPersons.map((person) => (
-        <DisplayContact key={person.name} person={person} />
+        <DisplayContact
+          key={person.name}
+          person={person}
+          handleDeletePerson={handleDeletePerson}
+        />
       ))}
     </>
   );
 };
 
-const DisplayContact = ({ person }) => {
+const DisplayContact = ({ person, handleDeletePerson }) => {
   return (
     <p key={person.name}>
-      {person.name} : {person.number}
+      {person.name} : {person.number}{" "}
+      <button onClick={() => handleDeletePerson(person.id, person.name)}>
+        Delete
+      </button>
     </p>
   );
 };
@@ -54,8 +61,8 @@ const App = () => {
   const [persons, setPersons] = useState([]);
 
   useEffect(() => {
-    phonebookService.getAll().then((response) => {
-      setPersons(response.data);
+    phonebookService.getAll().then((initialPersons) => {
+      setPersons(initialPersons);
     });
   }, []);
 
@@ -75,8 +82,8 @@ const App = () => {
     if (nameAlreadyInBook) {
       alert(`${newName} is already added to phonebook`);
     } else {
-      phonebookService.create(personObject).then((response) => {
-        setPersons(persons.concat(response.data));
+      phonebookService.create(personObject).then((newPerson) => {
+        setPersons(persons.concat(newPerson));
         setNewName("");
         setNewNumber("");
       });
@@ -86,6 +93,14 @@ const App = () => {
   const shownPersons = persons.filter((person) =>
     person.name.toLowerCase().includes(filterText.toLowerCase())
   );
+
+  const handleDeletePerson = (id, name) => {
+    if (window.confirm(`Delete ${name}?`)) {
+      const newPersonsArray = persons.filter((person) => person.id !== id);
+      phonebookService.deletePerson(id);
+      setPersons(newPersonsArray);
+    }
+  };
 
   return (
     <div>
@@ -100,7 +115,10 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h2>Numbers</h2>
-      <DisplayFilteredContacts shownPersons={shownPersons} />
+      <DisplayFilteredContacts
+        shownPersons={shownPersons}
+        handleDeletePerson={handleDeletePerson}
+      />
     </div>
   );
 };
