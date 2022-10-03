@@ -1,6 +1,13 @@
 import { useState, useEffect } from "react";
 import phonebookService from "./services/phonebook.js";
 
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null;
+  }
+  return <div className="notification">{message}</div>;
+};
+
 const Filter = ({ filterText, handleFilterChange }) => {
   return (
     <div>
@@ -67,6 +74,7 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filterText, setFilterText] = useState("");
+  const [message, setMessage] = useState(null);
 
   const handleFilterChange = (event) => setFilterText(event.target.value);
   const handleNameChange = (event) => setNewName(event.target.value);
@@ -101,6 +109,10 @@ const App = () => {
             );
             setNewName("");
             setNewNumber("");
+            setMessage(`Updated details for ${newPersonObject.name}`);
+            setTimeout(() => {
+              setMessage(null);
+            }, 5000);
           });
       }
     } else {
@@ -108,6 +120,10 @@ const App = () => {
         setPersons(persons.concat(newPerson));
         setNewName("");
         setNewNumber("");
+        setMessage(`Added ${newPersonObject.name}`);
+        setTimeout(() => {
+          setMessage(null);
+        }, 5000);
       });
     }
   };
@@ -127,6 +143,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
       <Filter filterText={filterText} handleFilterChange={handleFilterChange} />
       <h2>Add new contact</h2>
       <NewContactForm
