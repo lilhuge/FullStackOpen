@@ -5,6 +5,9 @@ const Notification = ({ message }) => {
   if (message === null) {
     return null;
   }
+  if (message.includes("Warning:"))
+    return <div className="warning">{message}</div>;
+
   return <div className="notification">{message}</div>;
 };
 
@@ -134,8 +137,12 @@ const App = () => {
 
   const handleDeletePerson = (id, name) => {
     if (window.confirm(`Delete ${name}?`)) {
-      const newPersonsArray = persons.filter((person) => person.id !== id);
-      phonebookService.deletePerson(id);
+      let newPersonsArray = persons.filter((person) => person.id !== id);
+      phonebookService.deletePerson(id).catch((error) => {
+        setMessage(
+          `Warning: The contact '${name}' was already deleted from server`
+        );
+      });
       setPersons(newPersonsArray);
     }
   };
